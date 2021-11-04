@@ -1,0 +1,131 @@
+---
+title: 'LBB-R Project Algoritma'
+author: "Sutanto The"
+date: "`r format(Sys.Date(), '%B %e, %Y')`"
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged 
+    highlight: tango
+    theme: cosmo
+    toc: yes
+    toc_float:
+      collapsed: no
+    number_sections: true
+  word_document:
+    toc: yes
+---
+
+# **The Worst Human Error, Titanic**
+
+# **History of Titanic**
+  RMS Titanic was a British passenger liner operated by the White Star Line that sank in the North Atlantic Ocean on 15 April 1912, after striking an iceberg during her maiden voyage from Southampton to New York City. Of the estimated 2,224 passengers and crew aboard, more than 1,500 died, making the sinking at the time one of the deadliest of a single ship[a] and the deadliest peacetime sinking of a superliner or cruise ship to date.[4] With much public attention in the aftermath, the disaster has since been the material of many artistic works and a founding material of the disaster film genre.
+
+  RMS Titanic was the largest ship afloat at the time she entered service and was the second of three Olympic-class ocean liners operated by the White Star Line. She was built by the Harland and Wolff shipyard in Belfast. Thomas Andrews, chief naval architect of the shipyard at the time, died in the disaster.
+  
+# **Diving into the Numbers.**
+
+  This analysis aims to explore the data on Titanic passengers, based on the data given below.
+  
+```{r}
+passenger<- read.csv("test.csv")
+
+str(passenger)
+```
+
+ 
+```{r}
+#Changing data types and checking Nulls on the data
+as.factor(passenger$Sex)
+```
+5
+As we inspect, there are no null observations in the dataset.
+
+
+## **Data Checking of the Passenger**
+```{r}
+summary(passenger)
+```
+
+
+## **Exploring the crucial Data**
+
+### **Gender**
+```{r}
+table(passenger$Sex)
+```
+```{r}
+
+```
+
+As we can see, the majority of the Passenger are Male. To be more detailed, we will check the age group for each sex.
+The age grouping will be divided into 4:
+1. 0-16 (Kids)
+2. 17 - 25 (Teen)
+3. 25-61 (Adult)
+4. 62-100 (Elderly)
+```{r}
+passenger$AgeGroup<-ifelse(passenger$Age>0&passenger$Age<=16,"Kids",
+                    ifelse(passenger$Age>16&passenger$Age<=25,"Teen",
+                    ifelse(passenger$Age>25&passenger$Age<=62,"Adult",
+                    ifelse(passenger$Age>62&passenger$Age<=100,"Elderly","NA"))))
+```
+
+```{r}
+
+kids<-passenger[passenger$AgeGroup=="Kids",]
+teen<-passenger[passenger$AgeGroup=="Teen",]
+adult<-passenger[passenger$AgeGroup=="Adult",]
+elder<-passenger[passenger$AgeGroup=="Elderly",]
+
+pie(table(kids$Sex),main="Kids Gender",labels=paste0(round(100 * table(kids$Sex)/sum(table(kids$Sex)), 0), "%"))
+legend("topleft", legend = c("Female","Male"),fill=c("white","lightblue"))
+pie(table(teen$Sex),main="Teen Gender",labels=paste0(round(100 * table(teen$Sex)/sum(table(teen$Sex)), 0), "%"))
+legend("topleft", legend = c("Female","Male"),fill=c("white","lightblue"))
+pie(table(adult$Sex),main="Adult Gender",labels=paste0(round(100 * table(adult$Sex)/sum(table(adult$Sex)), 0), "%"))
+legend("topleft", legend = c("Female","Male"),fill=c("white","lightblue"))
+pie(table(elder$Sex),main="Elder Gender",labels=paste0(round(100 * table(elder$Sex)/sum(table(elder$Sex)), 0), "%"))
+legend("topleft", legend = c("Female","Male"),fill=c("white","lightblue"))
+```
+
+The charts above visualize the distribution of gender based on their age.
+
+```{r}
+males<-passenger[passenger$Sex=="male",]
+females<-passenger[passenger$Sex=="female",]
+
+pie(table(males$AgeGroup),main="Male Age Group Distribution")
+pie(table(females$AgeGroup),main="Female Age Group Distribution")
+
+```
+
+Above are the visualization of Age Group distribution based one their Gender.
+
+## **Ticket Price Distribution**
+
+```{r}
+summary(passenger$Fare)
+var(passenger$Fare,na.rm=T)
+sum(passenger$Fare,na.rm=T)
+```
+
+
+As we can see above, the range between the most expensive and cheapest are very high. with the total sales being 14856.54
+
+
+
+```{r}
+Ticketing<-data.frame(xtabs(formula= Fare~Name,data=passenger))
+head(Ticketing[order(-Ticketing$Freq),],10)
+```
+
+Above are the top ten list of passenger that paid the most expensive ticket price.
+
+# **Conclusion**
+
+  The analysis above allows the reader to get a more detailed picture one the data of Titanic passengers.
+As we know, there are more males than female passenger and we have known the distribution of the age group as well.
+Second, there are also insight regarding the ticketing price, which has a very high discrepancy, judging from the value of the standard Deviation, the max value, and the mean value. To close it up, a top ten list of passenger names that paid the most expensive ticket price are shown above.
+
+
+
